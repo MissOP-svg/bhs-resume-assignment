@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resume Assignment — Browning High School</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-light: #E1F5EE;
+    --text: #1a1a1a;
+    --text-muted: #666;
+    --text-hint: #999;
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f3;
+    --border: rgba(0,0,0,0.12);
+    --border-med: rgba(0,0,0,0.22);
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --text: #f0f0ee;
+      --text-muted: #aaa;
+      --text-hint: #777;
+      --bg: #1c1c1a;
+      --bg-secondary: #252523;
+      --border: rgba(255,255,255,0.1);
+      --border-med: rgba(255,255,255,0.2);
+      --green-light: #04342C;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .school-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  header h1 { font-size: 16px; font-weight: 600; color: var(--text); }
+  header p { font-size: 12px; color: var(--text-muted); }
+
+  .progress-outer {
+    height: 4px;
+    background: var(--border);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+  }
+  .progress-inner {
+    height: 4px;
+    background: var(--green);
+    transition: width 0.4s ease;
+    width: 14%;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .step { display: none; }
+  .step.active { display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .step-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .step-num {
+    background: var(--green);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .step-counter { font-size: 12px; color: var(--text-hint); margin-left: auto; }
+
+  .step-title { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; line-height: 1.2; }
+  .step-desc { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-bottom: 1.5rem; }
+
+  .card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .login-grid { display: grid; gap: 0; }
+  .login-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border);
+    gap: 12px;
+  }
+  .login-row:last-child { border-bottom: none; }
+  .login-row .lbl { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+  .login-row code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: var(--bg-secondary);
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: var(--text);
+    text-align: right;
+  }
+
+  .tip {
+    border-left: 2px solid var(--green);
+    padding: 10px 14px;
+    background: var(--green-light);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 1rem 0;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .tip strong { color: var(--text); font-weight: 600; }
+
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist li input[type=checkbox] { margin-top: 3px; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--green); cursor: pointer; }
+  .checklist li label { cursor: pointer; }
+  .checklist li strong { color: var(--text); font-weight: 600; }
+
+  label.field-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  input[type=text], input[type=number] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 0.5px solid var(--border-med);
+    border-radius: var(--radius);
+    font-size: 15px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    margin-bottom: 0.75rem;
+    transition: border-color 0.15s;
+    font-family: inherit;
+  }
+  input[type=text]:focus, input[type=number]:focus { border-color: var(--green); }
+
+  textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 0.5px solid var(--border-med);
+    border-radius: var(--radius);
+    font-size: 14px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.6;
+    transition: border-color 0.15s;
+  }
+  textarea:focus { border-color: var(--green); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 22px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 0.5px solid var(--border-med);
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.15s, transform 0.1s;
+    text-decoration: none;
+    font-family: inherit;
+  }
+  .btn:hover { background: var(--bg-secondary); }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--green); color: white; border-color: var(--green); }
+  .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+  .btn-lg { padding: 14px 28px; font-size: 16px; width: 100%; justify-content: center; margin-bottom: 0.75rem; }
+
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; gap: 12px; }
+
+  .salary-big { font-size: 36px; font-weight: 800; color: var(--green); margin: 0.5rem 0 0.25rem; }
+  .salary-note { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  .career-inputs { display: grid; gap: 10px; }
+  .career-input-row { display: flex; align-items: center; gap: 10px; }
+  .career-input-row .num { font-size: 13px; font-weight: 700; color: var(--text-hint); width: 20px; flex-shrink: 0; text-align: center; }
+  .career-input-row input { margin-bottom: 0; }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 1rem 0; }
+
+  .career-card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .career-card .c-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .career-card .c-wage { font-size: 13px; color: var(--green); font-weight: 600; }
+  .career-card .c-outlook { font-size: 12px; color: var(--text-muted); }
+  .career-card .c-tasks-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-hint); }
+  .career-card .c-tasks { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .career-card .c-prompt { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-top: 4px; }
+  .career-card textarea { font-size: 13px; min-height: 80px; }
+  .loading-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-hint); font-style: italic; }
+
+  .finish-box {
+    background: var(--green-light);
+    border: 1px solid var(--green);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+  .finish-box .big-check { font-size: 36px; margin-bottom: 0.5rem; }
+  .finish-box h2 { font-size: 20px; font-weight: 700; color: var(--green-dark); margin-bottom: 0.25rem; }
+  .finish-box p { font-size: 14px; color: var(--text-muted); }
+
+  .dot-row { display: flex; gap: 6px; align-items: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-med); transition: background 0.2s; }
+  .dot.done { background: var(--green); }
+  .dot.active-dot { background: var(--green); }
+
+  @media (max-width: 500px) {
+    .step-title { font-size: 22px; }
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-outer"><div class="progress-inner" id="prog"></div></div>
+
+<header>
+  <div class="school-badge">BHS</div>
+  <div>
+    <h1>Resume Assignment</h1>
+    <p>Career &amp; Employability — Ms. Dorsey</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Step nav dots -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.75rem;">
+    <div class="dot-row" id="dots"></div>
+    <span style="font-size:12px; color:var(--text-hint);" id="step-counter">Step 1 of 7</span>
+  </div>
+
+  <!-- ── STEP 1: Login ── -->
+  <div class="step active" id="s1">
+    <div class="step-meta">
+      <span class="step-num">Step 1</span>
+    </div>
+    <h2 class="step-title">Log into MCIS</h2>
+    <p class="step-desc">MCIS is Montana's career database. You'll use it to take two surveys and discover careers that match your interests and salary goals.</p>
+
+    <div class="card">
+      <div class="login-grid">
+        <div class="login-row"><span class="lbl">Website</span><code>portal.mt.cis360.org</code></div>
+        <div class="login-row"><span class="lbl">Username format</span><code>GradYear + FirstName + LastInitial</code></div>
+        <div class="login-row"><span class="lbl">Example</span><code>26JaneS</code></div>
+        <div class="login-row"><span class="lbl">Password</span><code>Student password (First letter capitalized)</code></div>
+      </div>
+    </div>
+
+    <div class="tip">Once you're in, look for <strong>My Dashboard</strong> in the top menu — that's where the surveys live.</div>
+
+    <a href="https://portal.mt.cis360.org" target="_blank" class="btn btn-primary btn-lg" style="margin-top:1rem;">Open MCIS ↗</a>
+
+    <div class="nav-row">
+      <div></div>
+      <button class="btn btn-primary" onclick="go(2)">I'm logged in →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: Surveys ── -->
+  <div class="step" id="s2">
+    <div class="step-meta"><span class="step-num">Step 2</span></div>
+    <h2 class="step-title">Complete both surveys</h2>
+    <p class="step-desc">Go to <strong>My Dashboard → Self Survey</strong>. Complete both surveys before moving on — your results save automatically to your profile.</p>
+
+    <div class="card">
+      <ul class="checklist">
+        <li>
+          <input type="checkbox" id="c1" />
+          <label for="c1"><strong>Reality Check</strong> — answers lifestyle questions to calculate the annual salary you'll need. Write your number down.</label>
+        </li>
+        <li>
+          <input type="checkbox" id="c2" />
+          <label for="c2"><strong>Interest Profiler</strong> — finds which career industries match your personality and interests.</label>
+        </li>
+      </ul>
+    </div>
+
+    <div class="tip">When both are done, go to <strong>My Dashboard → Self Survey Results</strong> to see your saved scores.</div>
+
+    <div class="nav-row">
+      <button class="btn" onclick="go(1)">← Back</button>
+      <button class="btn btn-primary" onclick="go(3)">Both done →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Salary goal ── -->
+  <div class="step" id="s3">
+    <div class="step-meta"><span class="step-num">Step 3</span></div>
+    <h2 class="step-title">Your salary goal</h2>
+    <p class="step-desc">Under your Reality Check results, you'll see an annual salary number. Enter it below — this becomes your minimum target for every career you consider.</p>
+
+    <div class="card">
+      <label class="field-label">My annual salary goal (from Reality Check)</label>
+      <input type="number" id="salary" placeholder="e.g. 45000" oninput="updateSalary()" />
+      <div id="salary-display" style="display:none; margin-top:0.5rem;">
+        <div class="salary-big" id="salary-pretty"></div>
+        <p class="salary-note">Every career you pick must pay at or above this amount. In MCIS, click the arrow next to <strong>Wages</strong> twice to sort highest-paid careers to the top.</p>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn" onclick="go(2)">← Back</button>
+      <button class="btn btn-primary" onclick="go(4)">Got my number →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Pick careers ── -->
+  <div class="step" id="s4">
+    <div class="step-meta"><span class="step-num">Step 4</span></div>
+    <h2 class="step-title">Pick 5 careers</h2>
+    <p class="step-desc">In MCIS, click your top interest industry. Sort wages high to low. Hover over careers to read a summary, then click the thumbs-up to save favorites. Click a title to read the full description.</p>
+
+    <div class="tip">Only choose careers that pay at or above <strong id="salary-reminder">your salary goal</strong>. Read the full job description before deciding — you'll be writing about it!</div>
+
+    <div class="card">
+      <div class="career-inputs" id="career-inputs"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn" onclick="go(3)">← Back</button>
+      <button class="btn btn-primary" onclick="buildCards()">Build my career cards →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: Career cards ── -->
+  <div class="step" id="s5">
+    <div class="step-meta"><span class="step-num">Step 5</span></div>
+    <h2 class="step-title">Your career cards</h2>
+    <p class="step-desc">For each career, read the real wage and task info below. Then write how your own experiences connect — school, sports, volunteering, chores, anything.</p>
+
+    <div class="tip"><strong>Stuck?</strong> Ask yourself: "Have I ever organized something? Helped someone? Used this skill at home, in class, or on a team?" Almost every job skill shows up in daily life. Ask Ms. Dorsey for help if you need creative ideas.</div>
+
+    <div class="cards-grid" id="cards-container"></div>
+
+    <div class="nav-row">
+      <button class="btn" onclick="go(4)">← Back</button>
+      <button class="btn btn-primary" onclick="go(6)">Connections written →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 6: Fill resume ── -->
+  <div class="step" id="s6">
+    <div class="step-meta"><span class="step-num">Step 6</span></div>
+    <h2 class="step-title">Fill in your resume</h2>
+    <p class="step-desc">Open your resume template and complete each section. Check them off as you go.</p>
+
+    <div class="card">
+      <ul class="checklist">
+        <li>
+          <input type="checkbox" />
+          <label><strong>Header:</strong> Double-click your name to open the header. Replace [Your Name] with your real name — capitalize it, you're important! Add your school email (gradyear + firstname + lastinitial + bps.k12.mt.us) and press Enter to add one other way to contact you.</label>
+        </li>
+        <li>
+          <input type="checkbox" />
+          <label><strong>Work history:</strong> Company = Browning High School · Title = Student · Location = Browning, MT · Start = August [year you started BHS] · End = Present. Add a second entry if you've had a job outside of school.</label>
+        </li>
+        <li>
+          <input type="checkbox" />
+          <label><strong>Job duties:</strong> Go back to your chosen career in MCIS. Find tasks and skills you already do or have done. Copy the language from the description, then rewrite it with your real example. Use strong action words!</label>
+        </li>
+        <li>
+          <input type="checkbox" />
+          <label><strong>Skills section:</strong> Add at least 5 skills. Think broad — reading, cooking, staying calm under pressure, organizing, teamwork — all of these count.</label>
+        </li>
+        <li>
+          <input type="checkbox" />
+          <label><strong>Graduation year:</strong> Update the year at the bottom of the resume to your actual graduation year.</label>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn" onclick="go(5)">← Back</button>
+      <button class="btn btn-primary" onclick="go(7)">Resume filled in →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 7: Finish ── -->
+  <div class="step" id="s7">
+    <div class="step-meta"><span class="step-num">Step 7</span></div>
+    <h2 class="step-title">Finish strong</h2>
+    <p class="step-desc">Two final things before you're done.</p>
+
+    <div class="card" style="margin-bottom:1rem;">
+      <p style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:8px;">Professional summary</p>
+      <p style="font-size:14px; color:var(--text); line-height:1.7;">Write a short paragraph (3–5 sentences) at the top of your resume that answers: <em>Who are you? What can you do for this employer? What are you looking for?</em> Be confident — this is your first impression. Ask Ms. Dorsey if you need help finding the right words.</p>
+    </div>
+
+    <div class="card">
+      <p style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:8px;">Format painter cleanup</p>
+      <p style="font-size:14px; color:var(--text); line-height:1.7;">Highlight text that looks right → click the paint roller icon → click text that doesn't match. Do this section by section so everything looks uniform and professional. When it all looks clean, save as a PDF before turning in — unless Ms. Dorsey says otherwise.</p>
+    </div>
+
+    <div class="finish-box">
+      <div class="big-check">&#10003;</div>
+      <h2>You finished the resume assignment!</h2>
+      <p>Great work. Do one final read-through to make sure everything looks polished before you submit.</p>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn" onclick="go(6)">← Back</button>
+      <div></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+const TOTAL = 7;
+let current = 1;
+
+function buildDots() {
+  const d = document.getElementById('dots');
+  d.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const el = document.createElement('div');
+    el.className = 'dot' + (i <= current ? (i === current ? ' active-dot' : ' done') : '');
+    d.appendChild(el);
+  }
+}
+
+function go(n) {
+  document.getElementById('s' + current).classList.remove('active');
+  current = n;
+  document.getElementById('s' + current).classList.add('active');
+  document.getElementById('prog').style.width = Math.round((n / TOTAL) * 100) + '%';
+  document.getElementById('step-counter').textContent = 'Step ' + n + ' of ' + TOTAL;
+  buildDots();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateSalary() {
+  const val = parseInt(document.getElementById('salary').value);
+  const display = document.getElementById('salary-display');
+  const pretty = document.getElementById('salary-pretty');
+  const reminder = document.getElementById('salary-reminder');
+  if (val && val > 0) {
+    const fmt = '$' + val.toLocaleString() + ' / year';
+    pretty.textContent = fmt;
+    if (reminder) reminder.textContent = fmt;
+    display.style.display = 'block';
+  } else {
+    display.style.display = 'none';
+  }
+}
+
+function buildCareerInputs() {
+  const c = document.getElementById('career-inputs');
+  c.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const row = document.createElement('div');
+    row.className = 'career-input-row';
+    row.innerHTML = '<span class="num">' + i + '</span><input type="text" id="career' + i + '" placeholder="Career name from MCIS (e.g. Wildlife Biologist)" />';
+    c.appendChild(row);
+  }
+}
+
+async function buildCards() {
+  const careers = [];
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('career' + i);
+    if (el && el.value.trim()) careers.push(el.value.trim());
+  }
+  if (careers.length === 0) {
+    alert('Please enter at least one career name before continuing.');
+    return;
+  }
+  go(5);
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+  careers.forEach((name, idx) => {
+    const card = document.createElement('div');
+    card.className = 'career-card';
+    card.id = 'card' + idx;
+    card.innerHTML =
+      '<div class="c-title">' + escHtml(name) + '</div>' +
+      '<div class="loading-pill">Looking up career info&#8230;</div>';
+    container.appendChild(card);
+  });
+  for (let i = 0; i < careers.length; i++) {
+    await loadCard(careers[i], i);
+  }
+}
+
+async function loadCard(name, idx) {
+  const card = document.getElementById('card' + idx);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: 'For the career "' + name + '", respond ONLY with a valid JSON object — no markdown, no backticks, no explanation. Fields: wage (string, e.g. "$52,000/year median"), outlook (string, one short sentence on job growth), tasks (array of exactly 3 strings, each under 12 words, describing typical daily tasks). Use real BLS/O*NET data where possible.'
+        }]
+      })
+    });
+    const data = await res.json();
+    const raw = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    const info = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    card.innerHTML =
+      '<div class="c-title">' + escHtml(name) + '</div>' +
+      '<div class="c-wage">' + escHtml(info.wage || '') + '</div>' +
+      '<div class="c-outlook">' + escHtml(info.outlook || '') + '</div>' +
+      '<div class="c-tasks-label">Typical tasks</div>' +
+      '<div class="c-tasks">' + (info.tasks || []).map(t => '• ' + escHtml(t)).join('<br>') + '</div>' +
+      '<div class="c-prompt">Your connection to this work</div>' +
+      '<textarea placeholder="How does your school, sports, home life, or volunteer work connect to these tasks? Be specific — real examples make a stronger resume!"></textarea>';
+  } catch (e) {
+    card.innerHTML =
+      '<div class="c-title">' + escHtml(name) + '</div>' +
+      '<div class="loading-pill" style="font-style:normal; color:var(--text-muted);">Could not load data automatically. Look this career up at <a href="https://www.onetonline.org" target="_blank" style="color:var(--green);">onetonline.org</a> for tasks and wages.</div>' +
+      '<div class="c-prompt" style="margin-top:8px;">Your connection to this work</div>' +
+      '<textarea placeholder="Describe how your experience connects to this career..."></textarea>';
+  }
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+buildDots();
+buildCareerInputs();
+</script>
+</body>
+</html>
